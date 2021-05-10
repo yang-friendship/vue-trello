@@ -1,24 +1,61 @@
-import Vue from "vue"
+import Vue from 'vue'
 import Vuex from 'vuex'
-import * as api from "../api";
+import * as api from '../api'
+import axios from "axios";
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
-    state :{
-      isAddBoard : false
-    },
-  mutations : {
-      SET_IS_ADD_BOARD(state,toggle){
-        state.isAddBoard = toggle
-      }
+  state: {
+    token: null,
+    isAddBoard: false,
+    boards: [],
   },
-  actions : {
-      ADD_BOARD(_, {title}) {
-        return api.board.create(title)
+  getters: {
+    isAuth(state) {
+      return !!state.token
+    }
+  },
+  mutations: {
+    LOGIN (state, token) {
+      if (!token) {
+        return
       }
-  }
-});
+      state.token = token
+      localStorage.setItem('token', token);
+      // api.setAuthInHeader(token);  // Error
+      axios.defaults.headers.common['Authorization'] = token ? `Bearer ${token}` : null;
 
+    },
+    LOGOUT (state) {
+      state.token = null
+      delete localStorage.token
+      api.setAuthInHeader(null)
+    },
+    SET_IS_ADD_BOARD (state, toggle) {
+      state.isAddBoard = toggle
+    },
+    SET_BOARDS (state, boards) {
+      state.boards = boards
+    }
+  },
+  actions: {
+    LOGIN ({commit}, {email, password}) {
+      return api.auth.login(email, password)
+      .then(({accessToken}) => commit('LOGIN', accessToken))
+    },
+    ADD_BOARD (_, {title}) {
+      return api.board.create(title)
+    },
+    FETCH_BOARDS ({commit}) {
+      api.board.fetch().then(data => {
+        commit('SET_BOARDS', data.list)
+      })
+    }
+  }
+})
+
+const { token } = localStorage
+store.commit('LOGIN', token)
 
 export default store

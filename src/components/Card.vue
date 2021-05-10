@@ -14,18 +14,19 @@ export default {
 
   watch: {
 
-    '$route' : {
-      handler : 'fetchData',
+    '$route': {
+      handler: 'fetchData',
       immediate: true
     }
   }
   ,
   data() {
-    return {cid: 0,
-      loading :false
+    return {
+      cid: 0,
+      loading: false
     }
   },
-  methods : {
+  methods: {
     fetchData() {
       this.loading = true
       setTimeout(() => {

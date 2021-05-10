@@ -17,7 +17,8 @@
     <div slot="footer">
       <button class="btn" :class="{'btn-success': valid}" type="submit"
               form="add-board-form" :disabled="!valid">
-        Create Board</button>
+        Create Board
+      </button>
     </div>
   </Modal>
 
@@ -27,7 +28,6 @@
 <script>
 import Modal from "./Modal";
 import {mapMutations, mapActions} from "vuex";
-
 
 export default {
   components: {
@@ -52,7 +52,8 @@ export default {
       'SET_IS_ADD_BOARD'
     ]),
     ...mapActions([
-      'ADD_BOARD'
+      'ADD_BOARD',
+      'FETCH_BOARDS'
     ])
     ,
     close() {
@@ -60,8 +61,10 @@ export default {
     },
     addBoard() {
       this.SET_IS_ADD_BOARD(false)
-      this.$emit('submit')
       this.ADD_BOARD({title: this.input})
+      .then(() => {
+        this.FETCH_BOARDS()
+      })
     }
   }
 }

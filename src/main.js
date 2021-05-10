@@ -4,14 +4,13 @@ import VueRouter from 'vue-router'
 import router from './router'
 import store from './store'
 
-
 Vue.use(VueRouter)
 
 new Vue({
-  el: '#app',
-  router,
-  store,
-  render : h => h(App)
+    el: '#app',
+    router,
+    store,
+    render: h => h(App)
   }
 )
 

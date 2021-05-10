@@ -1,5 +1,5 @@
-import axios from "axios";
-import router from "../router";
+import axios from 'axios'
+import router from '../router'
 
 const DOMAIN = 'http://localhost:3000'
 const UNAUTHORIZED = 401
@@ -23,9 +23,6 @@ const request = (method, url, data) => {
 export const setAuthInHeader = token => {
   axios.defaults.headers.common['Authorization'] = token ? `Bearer ${token}` : null;
 }
-
-const {token} = localStorage
-if (token) setAuthInHeader(token)
 
 export const board = {
   fetch() {

@@ -4,10 +4,10 @@
     Board
     <div v-if="loading">loading board...</div>
     <div v-else>
-      <div>bid: {{bid}}</div>
+      <div>bid: {{ bid }}</div>
       <router-link :to="`/b/${bid}/c/1`">Card 1</router-link>
       <router-link :to="`/b/${bid}/c/2`">Card 2</router-link>
-      <hr />
+      <hr/>
       <router-view></router-view>
     </div>
   </div>

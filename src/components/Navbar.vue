@@ -16,20 +16,22 @@
 <script>
 
 import {setAuthInHeader} from "../api";
+import {mapGetters,mapMutations} from 'vuex'
 
 export default {
   name: "navbar",
-  computed : {
-    isAuth() {
-      let item = !!localStorage.getItem('token');
-      console.log('item' + item);
-      return item;
-    }
+  computed: {
+    ...mapGetters([
+      'isAuth'
+    ])
   },
-  methods : {
-    logout(){
-      delete localStorage.token
-      setAuthInHeader(null)
+  methods: {
+    ...mapMutations([
+      'LOGOUT'
+    ])
+    ,
+    logout() {
+      this.LOGOUT()
       this.$router.push('/login')
     }
   }
