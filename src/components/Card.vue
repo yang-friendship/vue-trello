@@ -3,15 +3,19 @@
   <Modal class="modal-card">
     <div slot="header" class="modal-card-header">
       <div class="modal-card-header-title">
-        <input class="form-control" type="text" :value="card.title" readonly>
+        <input class="form-control" type="text" :value="card.title"
+               :readonly="!toggleTitle" @click="toggleTitle=!toggleTitle" @blur="onBlurTitle"
+               ref="inputTitle">
       </div>
       <a class="modal-close-btn" href="" @click.prevent="onClose">&times;</a>
     </div>
     <div slot="body">
       <h3>Description</h3>
-      <textarea  class="form-control" cols="30" rows="3" placeholder="Add a more detailed description..."
-                 readonly
-                 v-model="card.description"></textarea>
+      <textarea class="form-control" cols="30" rows="3"
+                placeholder="Add a more detailed description..."
+                :readonly="!toggleDescription" @click="toggleDescription=!toggleDescription"
+                v-model="card.description" @blur="onBlurDesc"
+                ref="inputDesc"></textarea>
     </div>
     <div slot="footer"></div>
   </Modal>
@@ -24,6 +28,13 @@ import {mapActions, mapState} from 'vuex'
 
 export default {
   name: "Card",
+
+  data() {
+    return {
+      toggleTitle: false,
+      toggleDescription: false
+    }
+  },
   computed: {
     ...mapState([
       'card',
@@ -35,8 +46,7 @@ export default {
     Modal
   },
   created() {
-    const cid = this.$route.params.cid;
-    this.FETCH_CARD({id : cid})
+    this.fetchCard()
   }
   ,
   watch: {
@@ -48,18 +58,34 @@ export default {
   ,
   methods: {
     ...mapActions([
-      'FETCH_CARD'
+      'FETCH_CARD',
+      'UPDATE_CARD'
     ]),
     onClose() {
       console.log(`/b/${this.board.id}`);
       this.$router.push(`/b/${this.board.id}`)
     },
     onBlurTitle() {
-      this.toggleTitle = false
+      this.toggleTitle = !this.toggleTitle
       const title = this.$refs.inputTitle.value.trim()
-      if (!title) return
+      if (!title) {
+        return
+      }
       this.UPDATE_CARD({id: this.card.id, title})
-      .then(()=> this.fetchCard())
+      .then(() => this.fetchCard())
+    },
+    onBlurDesc(){
+      this.toggleDescription = !this.toggleDescription
+      const desc = this.$refs.inputDesc.value.trim()
+      if (!desc) {
+        return
+      }
+      this.UPDATE_CARD({id: this.card.id,description : desc })
+      .then(() => this.fetchCard())
+    },
+    fetchCard() {
+      const cid = this.$route.params.cid;
+      this.FETCH_CARD({id: cid})
     }
   }
 }
@@ -71,9 +97,11 @@ export default {
   max-width: 800px;
   width: 60%;
 }
+
 .modal-card-header-title {
   padding-right: 30px;
 }
+
 .modal-close-btn {
   position: absolute;
   top: 0px;
@@ -81,6 +109,7 @@ export default {
   font-size: 24px;
   text-decoration: none;
 }
+
 .modal-card-header {
   position: relative;
 }
