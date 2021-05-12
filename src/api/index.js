@@ -30,6 +30,12 @@ export const board = {
   },
   create(title) {
     return request('post', '/boards', {title})
+  },
+  destroy(id){
+    return request('delete',`/boards/${id}`,{id})
+  },
+  update(id, payload) {
+    return request('put',`/boards/${id}`,payload)
   }
 }
 export const auth = {
