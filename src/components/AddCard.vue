@@ -35,7 +35,7 @@ export default {
       if (this.invalidInput) return
       const {inputTitle, listId} = this
       const pos = this.newCardPos()
-      this.ADD_CARD({title: inputTitle, listId})
+      this.ADD_CARD({title: inputTitle, listId,pos})
       .finally(()=> this.inputTitle = '')
     },
     setupClickOutside(el) {
@@ -45,12 +45,12 @@ export default {
       })
     },
     newCardPos() {
-      const currList = this.$store.state.board.lists.filter(l => l.id =  this.listId)[0]
+      const currList = this.$store.state.board.lists.filter(l => l.id === this.listId)[0]
       if(!currList) return 65535
 
       const {cards} = currList
-      if(cards.length) return 65535
-      return cards[cards.length-1] * 2;
+      if(!cards.length) return 65535
+      return cards[cards.length-1].pos * 2;
     }
   }
 }

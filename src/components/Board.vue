@@ -25,8 +25,7 @@
 
 import {mapState, mapActions} from "vuex";
 import List from './List'
-import dragula from 'dragula'
-import 'dragula/dist/dragula.css'
+import dragger from "../utils/dragger";
 
 export default {
   name: "Board",
@@ -48,50 +47,12 @@ export default {
     return {
       bid: 0,
       loading: false,
-      dragulaCards: null
+      dragulaCards: null,
+      cDragger : null
     }
   },
   updated() {
-    if (this.dragulaCards) this.dragulaCards.destroy()
-
-    this.dragulaCards = dragula(
-      [
-        ...Array.from(this.$el.querySelectorAll('.card-list'))
-      ]
-    ).on('drop', (el, wrapper, target, siblings) => {
-      console.log('drop');
-      const targetCard =  {
-        id : el.dataset.cardId * 1,
-        pos : 655535
-      }
-
-      let preCard = null;
-      let nextCard = null;
-
-      Array.from(wrapper.querySelectorAll('.card-item'))
-      .forEach((el,idx, arr) => {
-        const cardId = el.dataset.cardId * 1
-        if(cardId == targetCard.id) {
-          preCard = idx > 0 ? {
-            id :arr[idx -1 ].dataset.cardId * 1,
-            pos :arr[idx -1 ].dataset.cardPos * 1,
-          } : null
-
-          nextCard = idx < arr.length - 1 ? {
-            id :arr[idx +1 ].dataset.cardId * 1,
-            pos :arr[idx +1 ].dataset.cardPos * 1,
-          } : null
-        }
-      })
-
-      if(!preCard && nextCard) targetCard.pos = nextCard.pos /2
-      else if (!nextCard && preCard) targetCard.pos = preCard.pos * 2
-      else if (preCard && nextCard ) targetCard.pos = (preCard.pos + nextCard.pos) /2
-
-      console.log(targetCard.pos);
-      this.UPDATE_CARD(targetCard)
-    })
-
+    this.setCardDragabble()
   },
   methods: {
     ...mapActions([
@@ -104,8 +65,37 @@ export default {
       console.log("bid:" + bid);
       this.FETCH_BOARD({id: bid})
       .then(() => this.loading = false);
+    },
+    setCardDragabble() {
+      if (this.cDragger) this.cDragger.destroy()
+
+
+      this.cDragger = dragger.init(Array.from(this.$el.querySelectorAll('.card-list')))
+      this.cDragger.on('drop', (el, wrapper, target, silblings) => {
+        const targetCard = {
+          id: el.dataset.cardId * 1,
+          listId: wrapper.dataset.listId * 1,
+          pos: 65535,
+        }
+        const {prev, next} = dragger.sibling({
+          el,
+          wrapper,
+          candidates: Array.from(wrapper.querySelectorAll('.card-item')),
+          type: 'card'
+        })
+
+        if (!prev && next) {
+          targetCard.pos = next.pos / 2
+        } else if (!next && prev) {
+          targetCard.pos = prev.pos * 2
+        } else if (next && prev) {
+          targetCard.pos = (prev.pos + next.pos) / 2
+        }
+        this.UPDATE_CARD(targetCard)
+      })
     }
   }
+
 }
 </script>
 
