@@ -1,5 +1,4 @@
 <template>
-
   <div>
     <div class="board-wrapper">
       <div class="board">
@@ -8,67 +7,61 @@
         </div>
         <div class="list-section-wrapper">
           <div class="list-section">
-            <div class="list-wrapper" v-for="list in board.lists" :key="board.pos">
-              <List :data="list"></List>
+            <div class="list-wrapper" v-for="list in board.lists" :key="list.pos">
+              <List :data="list"/>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <router-view>
-
-    </router-view>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-
-import {mapState, mapActions} from "vuex";
-import List from './List'
-import dragger from "../utils/dragger";
+import {mapState, mapMutations, mapActions} from 'vuex'
+import List from './List.vue'
+import dragger from '../utils/dragger'
 
 export default {
-  name: "Board",
-  components: {
-    List
-  }
-  ,
-  created() {
-    console.log('create fetch board');
-    this.fetchData()
-  },
-  computed: {
-    ...mapState([
-      'board'
-    ])
-  }
-  ,
+  components: {List},
   data() {
     return {
       bid: 0,
       loading: false,
-      dragulaCards: null,
-      cDragger : null
+      cDragger: null
     }
+  },
+  computed: {
+    ...mapState({
+      board: 'board'
+    })
+  },
+  created() {
+    this.fetchData().then(() => {
+      this.SET_THEME(this.board.bgColor)
+    })
   },
   updated() {
     this.setCardDragabble()
   },
   methods: {
+    ...mapMutations([
+      'SET_THEME'
+    ]),
     ...mapActions([
       'FETCH_BOARD',
       'UPDATE_CARD'
     ]),
     fetchData() {
       this.loading = true
-      let bid = this.$route.params.bid;
-      console.log("bid:" + bid);
-      this.FETCH_BOARD({id: bid})
-      .then(() => this.loading = false);
+      return this.FETCH_BOARD({id: this.$route.params.bid})
+      .then(() => this.loading = false)
     },
     setCardDragabble() {
-      if (this.cDragger) this.cDragger.destroy()
-
+      if (this.cDragger) {
+        this.cDragger.destroy()
+      }
 
       this.cDragger = dragger.init(Array.from(this.$el.querySelectorAll('.card-list')))
       this.cDragger.on('drop', (el, wrapper, target, silblings) => {
@@ -95,11 +88,10 @@ export default {
       })
     }
   }
-
 }
 </script>
 
-<style scoped>
+<style>
 .board-wrapper {
   position: absolute;
   top: 0;

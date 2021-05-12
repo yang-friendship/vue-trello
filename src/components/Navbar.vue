@@ -16,15 +16,27 @@
 <script>
 
 import {setAuthInHeader} from "../api";
-import {mapGetters,mapMutations} from 'vuex'
+import {mapGetters, mapMutations, mapState} from 'vuex'
 
 export default {
   name: "navbar",
   computed: {
     ...mapGetters([
       'isAuth'
-    ])
+    ]),
+    ...mapState({
+        bodyColor: 'bodyColor',
+        navbarColor: 'navbarColor'
+      }
+    )
   },
+  watch: {
+    'bodyColor': 'updateTheme'
+  },
+  mounted() {
+    this.updateTheme()
+  }
+  ,
   methods: {
     ...mapMutations([
       'LOGOUT'
@@ -33,8 +45,20 @@ export default {
     logout() {
       this.LOGOUT()
       this.$router.push('/login')
+    },
+    updateTheme() {
+      this.$el.style.backgroundColor = this.navbarColor
+
+      const container = document.querySelector('.container')
+      const body = document.querySelector('body')
+
+      if(body) body.style.backgroundColor = this.bodyColor
+      if (container)container.style.backgroundColor = this.bodyColor
+
+
     }
-  }
+  },
+
 }
 </script>
 
