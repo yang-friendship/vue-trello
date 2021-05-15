@@ -19,15 +19,15 @@ const actions = {
       commit('SET_BOARD', data.item)
     })
   },
-  UPDATE_BOARD({dispatch,state} , {id,title,bgColor}) {
-      return api.board.update(id,{title,bgColor})
+  UPDATE_BOARD({dispatch, state}, {id, title, bgColor}) {
+    return api.board.update(id, {title, bgColor})
     .then(() => {
-      dispatch('FETCH_BOARD', { id : state.board.id})
+      dispatch('FETCH_BOARD', {id: state.board.id})
     })
   },
 
-  ADD_CARD({dispatch,state} , {title,listId,pos}){
-    return api.card.create(title,listId,pos)
+  ADD_CARD({dispatch, state}, {title, listId, pos}) {
+    return api.card.create(title, listId, pos)
     .then(() => {
       dispatch('FETCH_BOARD', {id: state.board.id})
     })
@@ -35,23 +35,34 @@ const actions = {
   FETCH_CARD({commit}, {id}) {
     return api.card.fetch(id)
     .then((data) => {
-      var temp = data
-      commit('SET_CARD',data.item)
+      commit('SET_CARD', data.item)
     })
   },
-  UPDATE_CARD ({dispatch, state} , {id, title, description, pos, listId}) {
-      return api.card.update(id, {title, description, pos, listId})
-        .then(() => dispatch('FETCH_BOARD',{ id : state.board.id}) )
+  UPDATE_CARD({dispatch, state}, {id, title, description, pos, listId}) {
+    return api.card.update(id, {title, description, pos, listId})
+    .then(() => dispatch('FETCH_BOARD', {id: state.board.id}))
   },
-  DELETE_CARD ({dispatch, state}, {id}) {
+  DELETE_CARD({dispatch, state}, {id}) {
     return api.card.destroy(id)
-      .then(() => {
-        dispatch('FETCH_BOARD',{id: state.board.id})
-      })
+    .then(() => {
+      dispatch('FETCH_BOARD', {id: state.board.id})
+    })
   },
-  DELETE_BOARD( _, {id}) {
+  DELETE_BOARD(_, {id}) {
     return api.board.destroy(id)
   },
+  ADD_LIST({dispatch, state}, {title, boardId, pos}) {
+    return api.list.create({title, boardId, pos})
+    .then(() => {
+      dispatch('FETCH_BOARD', {id: state.board.id})
+    })
+  },
+  UPDATE_LIST({dispatch, state}, {id, title, pos}) {
+    return api.list.update(id, {title, pos})
+    .then(() => {
+      dispatch('FETCH_BOARD', {id: state.board.id})
+    })
+  }
 
 }
 
